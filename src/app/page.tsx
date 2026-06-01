@@ -1,5 +1,6 @@
 import Hero from "@/components/Hero";
 import TrustBadges from "@/components/TrustBadges";
+import GoogleReviews from "@/components/GoogleReviews";
 import About from "@/components/About";
 import Services from "@/components/Services";
 import WhyChoose from "@/components/WhyChoose";
@@ -13,6 +14,7 @@ export default function Home() {
     <>
       <Hero />
       <TrustBadges />
+      <GoogleReviews />
       <About />
       <Services />
       <WhyChoose />
