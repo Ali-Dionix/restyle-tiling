@@ -108,8 +108,8 @@ export default function About() {
               <div className="absolute inset-0 bg-gradient-to-t from-navy/30 via-transparent to-transparent" />
             </div>
             {/* Floating accent */}
-            <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-orange/10 rounded-xl -z-10 animate-pulse" />
-            <div className="absolute -top-4 -right-4 w-16 h-16 bg-blue/10 rounded-xl -z-10" />
+            <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-orange/10 rounded-xl -z-10 animate-pulse hidden sm:block" />
+            <div className="absolute -top-4 -right-4 w-16 h-16 bg-blue/10 rounded-xl -z-10 hidden sm:block" />
           </motion.div>
         </div>
 

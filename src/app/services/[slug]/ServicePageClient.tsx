@@ -121,7 +121,7 @@ export default function ServicePageClient({ service }: ServicePageClientProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.5 }}
-                className="bg-white p-8 sm:p-10 rounded-2xl border border-grey-light/35 shadow-sm"
+                className="bg-white p-5 sm:p-8 md:p-10 rounded-2xl border border-grey-light/35 shadow-sm"
               >
                 <h2 className="text-[22px] sm:text-[24px] font-extrabold text-navy mb-5 flex items-center gap-3">
                   <span className="w-1.5 h-7 bg-orange rounded-full" />
@@ -202,7 +202,7 @@ export default function ServicePageClient({ service }: ServicePageClientProps) {
                     Our Installation Process
                   </h2>
                 </div>
-                <div className="relative pl-6 sm:pl-8 border-l-2 border-orange/20 space-y-10 py-2">
+                <div className="relative ml-2 sm:ml-0 pl-6 sm:pl-8 border-l-2 border-orange/20 space-y-10 py-2">
                   {service.process.map((step, idx) => (
                     <motion.div
                       key={step.step}
@@ -283,7 +283,7 @@ export default function ServicePageClient({ service }: ServicePageClientProps) {
               <div className="sticky top-24 space-y-6">
                 
                 {/* Contact Card */}
-                <div className="bg-navy text-white p-8 rounded-2xl border border-navy-light shadow-lg relative overflow-hidden">
+                <div className="bg-navy text-white p-5 sm:p-8 rounded-2xl border border-navy-light shadow-lg relative overflow-hidden">
                   {/* Subtle decorative circles */}
                   <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-blue/15 pointer-events-none" />
                   <div className="absolute -bottom-10 -left-10 w-24 h-24 rounded-full bg-orange/10 pointer-events-none" />
