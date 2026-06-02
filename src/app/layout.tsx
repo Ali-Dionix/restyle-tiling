@@ -12,19 +12,43 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Restyle Wall & Floor Tiling | Professional Tiling Services",
+  metadataBase: new URL("https://www.restyletiling.com"),
+  title: {
+    default: "Restyle Wall & Floor Tiling | Professional Tiling Services",
+    template: "%s | Restyle Wall & Floor Tiling",
+  },
   description:
     "Restyle Wall & Floor Tiling provides high-quality wall and floor tiling services for bathrooms, kitchens, floors, and interior spaces. Clean workmanship, precise finishing, and reliable service.",
   keywords:
-    "wall tiling, floor tiling, bathroom tiling, kitchen tiling, tiling services, UK tiling contractor, tile installation, grout finishing",
+    "wall tiling, floor tiling, bathroom tiling, kitchen tiling, tiling services, UK tiling contractor, tile installation, grout finishing, restyle tiling",
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
     title: "Restyle Wall & Floor Tiling | Professional Tiling Services",
     description:
       "High-quality tiling solutions for bathrooms, kitchens, floors, and interior spaces. Clean workmanship, precise finishing, and reliable service from start to finish.",
-    url: "https://restyletiling.co.uk",
+    url: "https://www.restyletiling.com",
     siteName: "Restyle Wall & Floor Tiling",
     type: "website",
     locale: "en_GB",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Restyle Wall & Floor Tiling | Professional Tiling Services",
+    description:
+      "High-quality tiling solutions for bathrooms, kitchens, floors, and interior spaces. Clean workmanship and precise finishing.",
   },
 };
 

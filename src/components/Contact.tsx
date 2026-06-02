@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { submitContactForm, type ContactFormState } from "@/services/email/actions";
 
 const projectTypes = [
   "Wall Tiling",
@@ -12,28 +13,22 @@ const projectTypes = [
   "Other Tiling Work",
 ];
 
+const initialState: ContactFormState = {
+  success: false,
+  errors: {},
+  error: "",
+};
+
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    projectType: "",
-    message: "",
-  });
+  const [state, formAction, pending] = useActionState(submitContactForm, initialState);
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Form submission logic here
-    alert("Thank you! We'll be in touch shortly.");
-  };
+  // Reset form fields when submission is successful
+  useEffect(() => {
+    if (state?.success) {
+      formRef.current?.reset();
+    }
+  }, [state?.success]);
 
   return (
     <section id="contact" className="py-20 lg:py-28 bg-light">
@@ -106,9 +101,12 @@ export default function Contact() {
               </div>
               <div>
                 <h3 className="text-[15px] font-bold text-navy mb-1">Website</h3>
-                <span className="text-[15px] text-blue font-medium">
-                  restyletiling.co.uk
-                </span>
+                <a 
+                  href="https://www.restyletiling.com" 
+                  className="text-[15px] text-blue hover:text-navy transition-colors font-medium"
+                >
+                  www.restyletiling.com
+                </a>
               </div>
             </div>
 
@@ -162,9 +160,44 @@ export default function Contact() {
             className="lg:col-span-3"
           >
             <form
-              onSubmit={handleSubmit}
+              ref={formRef}
+              action={formAction}
+              aria-busy={pending}
               className="bg-white rounded-xl border border-grey-light/40 p-5 sm:p-8 shadow-sm"
+              noValidate
             >
+              {/* Success Banner */}
+              {state?.success && (
+                <div 
+                  className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 text-[14px] flex items-start gap-3"
+                  role="alert"
+                >
+                  <svg className="w-5 h-5 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <strong className="font-bold block mb-1">Enquiry Sent!</strong>
+                    Thank you! We've received your tiling inquiry and sent a receipt confirmation to your email. We will get back to you shortly.
+                  </div>
+                </div>
+              )}
+
+              {/* General Error Banner */}
+              {state?.error && (
+                <div 
+                  className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 text-[14px] flex items-start gap-3"
+                  role="alert"
+                >
+                  <svg className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <div>
+                    <strong className="font-bold block mb-1">Submission Failed</strong>
+                    {state.error}
+                  </div>
+                </div>
+              )}
+
               <div className="grid sm:grid-cols-2 gap-5">
                 {/* Name */}
                 <div>
@@ -178,12 +211,19 @@ export default function Contact() {
                     id="contact-name"
                     type="text"
                     name="name"
-                    value={formData.name}
-                    onChange={handleChange}
                     placeholder="Your name"
                     required
-                    className="w-full px-4 py-3 border border-grey-light/60 rounded-lg text-[14px] text-dark placeholder:text-grey focus:outline-none focus:border-blue focus:ring-2 focus:ring-blue/10 transition-all"
+                    aria-invalid={!!state?.errors?.name}
+                    aria-describedby={state?.errors?.name ? "contact-name-error" : undefined}
+                    className={`w-full px-4 py-3 border rounded-lg text-[14px] text-dark placeholder:text-grey focus:outline-none focus:ring-2 focus:ring-blue/10 transition-all ${
+                      state?.errors?.name ? "border-red-500 focus:border-red-500" : "border-grey-light/60 focus:border-blue"
+                    }`}
                   />
+                  {state?.errors?.name && (
+                    <p className="mt-1.5 text-[12px] text-red-500 font-medium" id="contact-name-error">
+                      {state.errors.name}
+                    </p>
+                  )}
                 </div>
 
                 {/* Phone */}
@@ -198,12 +238,19 @@ export default function Contact() {
                     id="contact-phone"
                     type="tel"
                     name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
                     placeholder="Your phone number"
                     required
-                    className="w-full px-4 py-3 border border-grey-light/60 rounded-lg text-[14px] text-dark placeholder:text-grey focus:outline-none focus:border-blue focus:ring-2 focus:ring-blue/10 transition-all"
+                    aria-invalid={!!state?.errors?.phone}
+                    aria-describedby={state?.errors?.phone ? "contact-phone-error" : undefined}
+                    className={`w-full px-4 py-3 border rounded-lg text-[14px] text-dark placeholder:text-grey focus:outline-none focus:ring-2 focus:ring-blue/10 transition-all ${
+                      state?.errors?.phone ? "border-red-500 focus:border-red-500" : "border-grey-light/60 focus:border-blue"
+                    }`}
                   />
+                  {state?.errors?.phone && (
+                    <p className="mt-1.5 text-[12px] text-red-500 font-medium" id="contact-phone-error">
+                      {state.errors.phone}
+                    </p>
+                  )}
                 </div>
 
                 {/* Email */}
@@ -218,11 +265,19 @@ export default function Contact() {
                     id="contact-email"
                     type="email"
                     name="email"
-                    value={formData.email}
-                    onChange={handleChange}
                     placeholder="Your email"
-                    className="w-full px-4 py-3 border border-grey-light/60 rounded-lg text-[14px] text-dark placeholder:text-grey focus:outline-none focus:border-blue focus:ring-2 focus:ring-blue/10 transition-all"
+                    required
+                    aria-invalid={!!state?.errors?.email}
+                    aria-describedby={state?.errors?.email ? "contact-email-error" : undefined}
+                    className={`w-full px-4 py-3 border rounded-lg text-[14px] text-dark placeholder:text-grey focus:outline-none focus:ring-2 focus:ring-blue/10 transition-all ${
+                      state?.errors?.email ? "border-red-500 focus:border-red-500" : "border-grey-light/60 focus:border-blue"
+                    }`}
                   />
+                  {state?.errors?.email && (
+                    <p className="mt-1.5 text-[12px] text-red-500 font-medium" id="contact-email-error">
+                      {state.errors.email}
+                    </p>
+                  )}
                 </div>
 
                 {/* Project Type */}
@@ -236,10 +291,12 @@ export default function Contact() {
                   <select
                     id="contact-project-type"
                     name="projectType"
-                    value={formData.projectType}
-                    onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-grey-light/60 rounded-lg text-[14px] text-dark bg-white focus:outline-none focus:border-blue focus:ring-2 focus:ring-blue/10 transition-all appearance-none"
+                    aria-invalid={!!state?.errors?.projectType}
+                    aria-describedby={state?.errors?.projectType ? "contact-project-error" : undefined}
+                    className={`w-full px-4 py-3 border rounded-lg text-[14px] text-dark bg-white focus:outline-none focus:ring-2 focus:ring-blue/10 transition-all appearance-none ${
+                      state?.errors?.projectType ? "border-red-500 focus:border-red-500" : "border-grey-light/60 focus:border-blue"
+                    }`}
                     style={{
                       backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23A3A3A3'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`,
                       backgroundRepeat: "no-repeat",
@@ -254,6 +311,11 @@ export default function Contact() {
                       </option>
                     ))}
                   </select>
+                  {state?.errors?.projectType && (
+                    <p className="mt-1.5 text-[12px] text-red-500 font-medium" id="contact-project-error">
+                      {state.errors.projectType}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -268,22 +330,43 @@ export default function Contact() {
                 <textarea
                   id="contact-message"
                   name="message"
-                  value={formData.message}
-                  onChange={handleChange}
                   placeholder="Tell us about your tiling project — area size, tile preferences, timeline, etc."
                   rows={5}
-                  className="w-full px-4 py-3 border border-grey-light/60 rounded-lg text-[14px] text-dark placeholder:text-grey focus:outline-none focus:border-blue focus:ring-2 focus:ring-blue/10 transition-all resize-none"
+                  required
+                  aria-invalid={!!state?.errors?.message}
+                  aria-describedby={state?.errors?.message ? "contact-message-error" : undefined}
+                  className={`w-full px-4 py-3 border rounded-lg text-[14px] text-dark placeholder:text-grey focus:outline-none focus:ring-2 focus:ring-blue/10 transition-all resize-none ${
+                    state?.errors?.message ? "border-red-500 focus:border-red-500" : "border-grey-light/60 focus:border-blue"
+                  }`}
                 />
+                {state?.errors?.message && (
+                  <p className="mt-1.5 text-[12px] text-red-500 font-medium" id="contact-message-error">
+                    {state.errors.message}
+                  </p>
+                )}
               </div>
 
               <button
                 type="submit"
-                className="mt-6 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-orange text-white text-[15px] font-semibold rounded-lg hover:bg-orange-light transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                disabled={pending}
+                className="mt-6 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-orange text-white text-[15px] font-semibold rounded-lg hover:bg-orange-light transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
               >
-                Send Enquiry
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
+                {pending ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    Send Enquiry
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </>
+                )}
               </button>
             </form>
           </motion.div>
@@ -292,3 +375,4 @@ export default function Contact() {
     </section>
   );
 }
+

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import ServicePageClient from "./ServicePageClient";
 import { Metadata } from "next";
+import JsonLd from "@/components/JsonLd";
 
 interface Feature {
   title: string;
@@ -265,5 +266,17 @@ export default async function ServicePage({ params }: Props) {
     notFound();
   }
 
-  return <ServicePageClient service={service} />;
+  const breadcrumbs = [
+    { name: "Home", path: "/" },
+    { name: "Services", path: "/#services" },
+    { name: service.title, path: `/services/${slug}` },
+  ];
+
+  return (
+    <>
+      <JsonLd type="Breadcrumbs" data={breadcrumbs} />
+      <JsonLd type="FAQ" data={service.faqs} />
+      <ServicePageClient service={service} />
+    </>
+  );
 }
